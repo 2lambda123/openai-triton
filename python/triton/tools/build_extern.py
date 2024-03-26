@@ -2,6 +2,7 @@ import argparse
 import subprocess
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
+from security import safe_command
 
 
 class Symbol:
@@ -141,9 +142,9 @@ class ExternLibrary(ABC):
             f.write(file_str)
             f.close()
             if self._format:
-                subprocess.Popen(["autopep8", "-a", "-r", "-i", output_file],
+                safe_command.run(subprocess.Popen, ["autopep8", "-a", "-r", "-i", output_file],
                                  stdout=subprocess.PIPE).communicate()
-                subprocess.Popen(["isort", output_file], stdout=subprocess.PIPE).communicate()
+                safe_command.run(subprocess.Popen, ["isort", output_file], stdout=subprocess.PIPE).communicate()
 
 
 class Libdevice(ExternLibrary):
@@ -334,7 +335,7 @@ class LLVMDisassembler:
         self._ll_file = "/tmp/extern_lib.ll"
 
     def disasm(self, lib_path: str) -> None:
-        subprocess.Popen([self._path, lib_path, "-o", self.ll_file],
+        safe_command.run(subprocess.Popen, [self._path, lib_path, "-o", self.ll_file],
                          stdout=subprocess.PIPE).communicate()
 
     @property

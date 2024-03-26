@@ -1,13 +1,14 @@
 import os
 import subprocess
 import sys
+from security import safe_command
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 printf_path = os.path.join(dir_path, "printf_helper.py")
 
 
 def test_printf():
-    proc = subprocess.Popen([sys.executable, printf_path], stdout=subprocess.PIPE, shell=False)
+    proc = safe_command.run(subprocess.Popen, [sys.executable, printf_path], stdout=subprocess.PIPE, shell=False)
     (outs, err) = proc.communicate()
     outs = outs.split()
     new_lines = set()

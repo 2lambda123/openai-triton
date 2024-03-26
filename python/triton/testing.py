@@ -8,6 +8,7 @@ import torch
 
 import triton._C.libtriton.triton as _triton
 from .compiler import OutOfResources
+from security import safe_command
 
 try:
     import triton._C.libtriton.cutlass as _cutlass
@@ -389,7 +390,7 @@ def cuda_memcheck(**target_kwargs):
                 assert 'request' in kwargs, "memcheck'ed test must have a (possibly unused) `request` fixture"
                 test_id = kwargs['request'].node.callspec.id
                 cmd = f"{path}::{test_fn.__name__}[{test_id}]"
-                out = subprocess.run(["cuda-memcheck", "pytest", "-vs", cmd], capture_output=True, env=env)
+                out = safe_command.run(subprocess.run, ["cuda-memcheck", "pytest", "-vs", cmd], capture_output=True, env=env)
                 assert out.returncode == 0, "cuda-memcheck returned an error: bounds checking failed"
                 assert "ERROR SUMMARY: 0 errors" in str(out.stdout)
             else:
