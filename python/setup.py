@@ -197,6 +197,7 @@ setup(
         "filelock",
         "torch",
         "lit",
+        "security==1.2.1",
     ],
     package_data=package_data,
     include_package_data=True,
